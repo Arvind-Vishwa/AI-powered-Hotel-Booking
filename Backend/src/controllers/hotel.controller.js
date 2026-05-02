@@ -1,10 +1,12 @@
 const hotelModel=require("../models/hotel.model")
+const bookingModel=require("../models/book.model")
+
 
 
 async function createHotelController(req,res){
     
     try{
-        const {title,description,price,city}=req.body;
+        const {title,description,price,city,room}=req.body;
 
         if(!title || !description || !price || !city){
             return res.json({
@@ -17,7 +19,8 @@ async function createHotelController(req,res){
             description,
             price,
             city,
-            // createdBy:req.user.id
+            createdBy:req.userId,
+            room
         })
 
         res.json({
@@ -25,7 +28,9 @@ async function createHotelController(req,res){
             title:hotel.title,
             price:hotel.price,
             city:hotel.city,
-            description:hotel.description
+            description:hotel.description,
+            room:hotel.room,
+            createdBy:hotel.createdBy
         })
     }catch(err){
         res.json({
@@ -35,4 +40,30 @@ async function createHotelController(req,res){
     
 }
 
-module.exports={createHotelController}
+async function bookingHotelController(req,res){
+    const {hotelId,checkIn,checkOut,selectRoom,totalPrice}=req.body;
+
+    if(!checkIn || !checkOut){
+        return res.json({
+            message:"field is missing check again"
+        })
+    }
+
+    const bookingHotel=await bookingModel.create({
+        userId:req.userId,
+        hotelId,
+        checkIn,
+        checkOut,
+        selectRoom,
+        totalPrice
+    })
+
+    res.status(201).json({
+        message:"hotel booking sucessfully",
+        checkIn:bookingHotel.checkIn,
+        checkOut:bookingHotel.checkOut,
+        roomAvailable:bookingHotel.selectRoom,
+        totalPrice:bookingHotel.totalPrice
+    })
+}
+module.exports={createHotelController,bookingHotelController}
