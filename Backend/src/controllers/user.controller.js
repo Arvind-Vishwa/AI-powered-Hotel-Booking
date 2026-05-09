@@ -39,10 +39,15 @@ async function registerController(req,res){
         },process.env.JWT_SECRET,
         {expiresIn:"3d"})
 
-        res.cookie(token,token);
+        res.cookie(token,token,{
+            httpOnly:true,
+            secure:false,
+            sameSite:"lax"
+        });
 
         res.status(200).json({
             message:"User created sucessfully",
+            token:token,
             user:user._id,
             email:user.email
         })
@@ -55,50 +60,74 @@ async function registerController(req,res){
     }
 }
 
-async function loginController(req,res){
-    try{
-        const {email,password}=req.body;
-
-    if(!email || !password)
-    {
-        return res.status(402).json({
-            message:"forbidden error"
-        })
+    async function loginController(req, res) {
+        try {
+        const { email, password } = req.body;
+    
+        if (!email || !password) {
+            return res.status(400).json({
+            message: "Email and password required",
+            });
+        }
+    
+        const user = await userModel.findOne({ email });
+    
+        if (!user) {
+            return res.status(404).json({
+            message: "User does not exist",
+            });
+        }
+    
+        const pass = await bcrypt.compare(password, user.password);
+    
+        if (!pass) {
+            return res.status(401).json({
+            message: "Password does not match",
+            });
+        }
+    
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "3d" }
+        );
+    
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+        });
+    
+        return res.status(200).json({
+            user: {
+            _id: user._id,
+            name: user.username,
+            email: user.email,
+            },
+        });
+    
+        } catch (err) {
+        return res.status(500).json({
+            message: err.message,
+        });
+        }
     }
-
-    const user=await userModel.findOne({
-        email
-    }).select('+password')
-
+async function getMeController(req,res){
+    
+    const user=await userModel.findById(req.userId)
+    // console.log(user)
     if(!user){
-        return res.json({
-            message:"user does not exist"
+        res.json({
+            message:"No user exist try to register yourself"
         })
     }
-
-    const pass=bcrypt.compare(password,user.password);
-    if(!pass){
-        return res.json({
-            message:"password does not match"
-        })
-    }
-
-    const token=jwt.sign({
-        userId:user._id
-    },process.env.JWT_SECRET,
-    {expiresIn:"3d" })
-
-    res.cookie("token",token);
 
     res.status(200).json({
-        message:"User login sucessfully"
+        message:"User fetched succesfully",
+        username:user.username,
+        email:user.email
     })
-    }catch(err){
-        res.status(401).json({
-            message:err
-        })
-    }
-}
+}   
 
 
-module.exports={registerController,loginController}
+module.exports={registerController,loginController,getMeController}

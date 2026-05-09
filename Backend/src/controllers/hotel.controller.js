@@ -40,30 +40,64 @@ async function createHotelController(req,res){
     
 }
 
-async function bookingHotelController(req,res){
-    const {hotelId,checkIn,checkOut,selectRoom,totalPrice}=req.body;
-
-    if(!checkIn || !checkOut){
-        return res.json({
-            message:"field is missing check again"
-        })
-    }
-
-    const bookingHotel=await bookingModel.create({
-        userId:req.userId,
-        hotelId,
+async function bookingHotelController(req, res) {
+    try {
+      const {
         checkIn,
         checkOut,
         selectRoom,
-        totalPrice
-    })
+        totalPrice,
+      } = req.body;
+  
+      const { hotelId } = req.params;
+      console.log(hotelId);
+  
+      // validation
+      if (!checkIn || !checkOut) {
+        return res.status(400).json({
+          success: false,
+          message: "Fields are missing",
+        });
+      }
+  
+      // create booking
+      const bookingHotel =
+        await bookingModel.create({
+          userId: req.userId,
+          hotelId,
+          checkIn,
+          checkOut,
+          selectRoom,
+          totalPrice,
+        });
+  
+      res.status(201).json({
+        success: true,
+        message: "Hotel booked successfully",
+        booking: bookingHotel,
+      });
+  
+    } catch (error) {
+      console.error(error);
+  
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 
-    res.status(201).json({
-        message:"hotel booking sucessfully",
-        checkIn:bookingHotel.checkIn,
-        checkOut:bookingHotel.checkOut,
-        roomAvailable:bookingHotel.selectRoom,
-        totalPrice:bookingHotel.totalPrice
+async function getHotelController(req,res){
+    const hotel=await hotelModel.find();
+
+    if(!hotel){
+        return res.json({
+            message:"No hotel exist"
+        })
+    }
+    res.status(200).json({
+        message:"Hotel fetched succesfully",
+        hotels:hotel
     })
 }
-module.exports={createHotelController,bookingHotelController}
+module.exports={createHotelController,bookingHotelController,getHotelController}

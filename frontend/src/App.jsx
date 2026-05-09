@@ -1,11 +1,20 @@
-import React from 'react'
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
+import { useEffect } from "react";
+import { useAuthStore } from "./AuthStore";
 
-const App = () => {
+function App() {
+  const fetchUser = useAuthStore((state) => state.fetchUser);
+
+  useEffect(() => {
+    fetchUser(); // auto-login using cookies
+  }, []);
+
   return (
-    <div>
-      APP
-    </div>
-  )
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

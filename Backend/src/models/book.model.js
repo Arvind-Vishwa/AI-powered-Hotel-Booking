@@ -14,7 +14,7 @@ const bookingSchema=new mongoose.Schema({
     },
     checkIn:{
         type:Date,
-        default:Date.now(),
+        default:Date.now,
         required:true
     },checkOut:{
         type:Date,

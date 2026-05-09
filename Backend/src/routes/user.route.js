@@ -1,10 +1,13 @@
 const express=require('express')
 const router=express.Router();
-const {registerController,loginController}=require('../controllers/user.controller')
+const {registerController,loginController,getMeController}=require('../controllers/user.controller')
+const authMiddleware=require('../middleware/auth.middleware')
+
 
 router.post('/register',registerController)
 
 router.post('/login',loginController)
 
+router.get('/me',authMiddleware,getMeController)
 
 module.exports=router
