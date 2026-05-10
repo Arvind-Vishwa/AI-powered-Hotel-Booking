@@ -65,6 +65,10 @@ const hotelSchema=new mongoose.Schema({
     room:{
         type:Number,
         required:true
+    },
+    img:{
+        type:String,
+        required:true
     }
 })
 
