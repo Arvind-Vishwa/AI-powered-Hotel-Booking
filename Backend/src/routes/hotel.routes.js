@@ -1,18 +1,22 @@
 const express=require('express')
 const router=express.Router();
 const {createHotelController,getHotelController}=require('../controllers/hotel.controller')
-const {bookingHotelController}=require("../controllers/hotel.controller")
+const {bookingHotelController,deleteHotelController}=require("../controllers/hotel.controller")
 const authMiddleware=require("../middleware/auth.middleware")
 const {uploadFile}=require('../services/imageKit.service')
-
+const multer=require('multer')
+const authorize=require('../middleware/authorize')
 const upload=multer({
     storage:multer.memoryStorage()
 })
 
-router.post('/create',authMiddleware,upload.single('img'),createHotelController)
+router.post('/create',authMiddleware,authorize("owner"),upload.single('img'),createHotelController)
 router.get('/getHotel',getHotelController)
 
 
 router.post('/book/:hotelId',authMiddleware,bookingHotelController)
+
+// delete
+router.delete('/book/:hotelId',authMiddleware,authorize("admin"),deleteHotelController)
 
 module.exports=router
