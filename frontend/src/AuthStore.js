@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { loginUser, registerUser, getMe } from "./api/auth.js";
+import { loginUser, registerUser, getMe,logoutUser } from "./api/auth.js";
 
 export const useAuthStore = create((set) => ({
   user: null,
@@ -21,7 +21,7 @@ export const useAuthStore = create((set) => ({
         user,
         loading: false,
       });
-      return true
+      return res.data.user
     } catch (err) {
       console.log("ERROR:", err.response?.data || err.message);
   
@@ -31,9 +31,29 @@ export const useAuthStore = create((set) => ({
   },
 
   register: async (data) => {
-    set({ loading: true });
-    const res = await registerUser(data);
-    set({ user: res.data.user, loading: false });
+
+    try {
+  
+      set({ loading: true });
+  
+      const res = await registerUser(data);
+  
+      set({
+        user: res.data.user,
+        loading: false
+      });
+  
+      // IMPORTANT
+      return res.data.user;
+  
+    } catch (err) {
+  
+      console.log(err);
+  
+      set({ loading: false });
+  
+      return null;
+    }
   },
 
   fetchUser: async () => {
@@ -45,8 +65,8 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-//   logout: async () => {
-//     await logoutUser();
-//     set({ user: null });
-//   },
+  logout: async () => {
+    await logoutUser();
+    set({ user: null });
+  },
 }));
