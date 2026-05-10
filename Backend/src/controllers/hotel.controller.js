@@ -153,4 +153,29 @@ async function deleteHotelController(req, res) {
   }
 }
 
-module.exports={createHotelController,bookingHotelController,getHotelController,deleteHotelController}
+async function listingController(req,res){
+
+  const token=req.cookies.token;
+
+  if(!token){
+    return res.status(401).json({
+      message:"Token is missing"
+    })
+  }
+  const userId=req.userId;
+  // console.log(userId)
+
+  const listing=await hotelModel.find({
+    createdBy: req.userId
+  })
+
+  res.status(200).json({
+    message:"listing fetched",
+    data:{
+      data:listing
+    }
+  })
+}
+
+module.exports={createHotelController,bookingHotelController,
+    listingController,getHotelController,deleteHotelController}
