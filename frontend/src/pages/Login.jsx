@@ -11,8 +11,12 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = await login(form);
-    if (user) {
-      navigate("/");
+    if (user.role === 'user') {
+      navigate("/user");
+    }else if(user.role === 'owner'){
+      navigate('/owner')
+    }else if(user.role === 'admin'){
+      navigate('/admin')
     }
   };
 

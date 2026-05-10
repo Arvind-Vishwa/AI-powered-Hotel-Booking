@@ -1,42 +1,66 @@
 import { useState } from "react";
 import { createHotel } from "../api/hotel";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 export default function CreateHotel() {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+
   const [data, setData] = useState({
     title: "",
     description: "",
-    location: "",
     city: "",
     price: "",
-    room:""
+    room: "",
+    img: null,
   });
 
+  // Handle Input Change
   const handleChange = (e) => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value, files } = e.target;
+
+    // File Input
+    if (name === "img") {
+      setData({
+        ...data,
+        img: files[0],
+      });
+    } else {
+      setData({
+        ...data,
+        [name]: value,
+      });
+    }
   };
 
+  // Submit Form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await createHotel(data);
+      // FormData for file upload
+      const formData = new FormData();
+
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("city", data.city);
+      formData.append("price", data.price);
+      formData.append("room", data.room);
+      formData.append("img", data.img);
+
+      await createHotel(formData);
+
       alert("Hotel created successfully!");
 
       setData({
         title: "",
         description: "",
-        location: "",
         city: "",
         price: "",
-        room:""
+        room: "",
+        img: null,
       });
 
-      navigate('/')
+      navigate("/");
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
@@ -60,7 +84,7 @@ export default function CreateHotel() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          
+
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -85,27 +109,26 @@ export default function CreateHotel() {
 
             <textarea
               name="description"
-              placeholder="Write hotel description..."
               rows="4"
+              placeholder="Write hotel description..."
               value={data.description}
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-2xl border border-gray-300 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black transition resize-none"
             />
           </div>
 
-          {/* Location */}
+          {/* Image */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Location
+              Hotel Image
             </label>
 
             <input
-              type="text"
-              name="location"
-              placeholder="Enter hotel location"
-              value={data.location}
+              type="file"
+              name="img"
+              accept="image/*"
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-2xl border border-gray-300 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black transition"
+              className="w-full px-4 py-3 rounded-2xl border border-gray-300 bg-gray-50 focus:outline-none"
             />
           </div>
 
@@ -118,7 +141,7 @@ export default function CreateHotel() {
             <input
               type="text"
               name="city"
-              placeholder="Enter city name"
+              placeholder="Enter city"
               value={data.city}
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-2xl border border-gray-300 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black transition"
@@ -141,11 +164,10 @@ export default function CreateHotel() {
             />
           </div>
 
-          {/* // rooms available */}
-
+          {/* Room */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Rooms available
+              Rooms Available
             </label>
 
             <input
@@ -158,7 +180,7 @@ export default function CreateHotel() {
             />
           </div>
 
-          {/* Button */}
+          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-black text-white py-3 rounded-2xl font-medium hover:bg-gray-800 transition-all duration-300 shadow-md hover:shadow-xl"

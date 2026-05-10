@@ -11,7 +11,7 @@ export const createHotel = async(data) => {
 };
 export const getHotels = async() => {
     const res=await API.get("/getHotel")
-    
+    console.log(res)
     return res;
 
 };
@@ -27,4 +27,9 @@ export const bookHotel = async (
   
     return res.data;
   };
+
+  export const listing=async()=>{
+    const res=await API.get('/listing')
+    return res;
+}
 
