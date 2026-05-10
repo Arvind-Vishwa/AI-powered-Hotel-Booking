@@ -3,62 +3,100 @@ const bcrypt=require('bcryptjs')
 const jwt=require('jsonwebtoken')
 
 
-async function registerController(req,res){
+    async function registerController(req, res) {
 
-    try{
-        const {username,email,password}=req.body;
-
-        if(!username || !email || !password){
-            return res.json({
-                message:"username or email or password something is missing"
-            })
-        }
-
-        const isUserExist=await userModel.findOne({
-            email
-        })
-
-        if(isUserExist){
-            return res.status(401).json({
-                message:"User already exist"
-            })
-        }
-
-
-
-        const hash=await bcrypt.hash(password,10);
-
-        const user=await userModel.create({
+        try {
+    
+        const {
             username,
             email,
-            password:hash
-        })
-
-        const token=jwt.sign({
-            userId:user._id
-        },process.env.JWT_SECRET,
-        {expiresIn:"3d"})
-
-        res.cookie(token,token,{
-            httpOnly:true,
-            secure:false,
-            sameSite:"lax"
+            password,
+            role
+        } = req.body;
+    
+        // VALIDATION
+        if (!username || !email || !password) {
+    
+            return res.status(400).json({
+            success: false,
+            message: "Username, email or password missing"
+            });
+        }
+    
+        // CHECK EXISTING USER
+        const isUserExist = await userModel.findOne({
+            email
         });
-
-        res.status(200).json({
-            message:"User created sucessfully",
-            token:token,
-            user:user._id,
-            email:user.email
-        })
-
-
-    }catch(err){
-        res.json({
-            message:"Some error to register controller"
-        })
+    
+        if (isUserExist) {
+    
+            return res.status(409).json({
+            success: false,
+            message: "User already exists"
+            });
+        }
+    
+        // ALLOW ONLY USER OR OWNER
+        const allowedRoles = ["user", "owner"];
+    
+        const userRole = allowedRoles.includes(role)
+            ? role
+            : "user";
+    
+        // HASH PASSWORD
+        const hash = await bcrypt.hash(password, 10);
+    
+        // CREATE USER
+        const user = await userModel.create({
+            username,
+            email,
+            password: hash,
+            role: userRole
+        });
+    
+        // CREATE JWT
+        const token = jwt.sign(
+            {
+            userId: user._id,
+            role: user.role
+            },
+            process.env.JWT_SECRET,
+            {
+            expiresIn: "3d"
+            }
+        );
+    
+        // STORE COOKIE
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false, // true in production
+            sameSite: "lax",
+            maxAge: 3 * 24 * 60 * 60 * 1000
+        });
+    
+        // RESPONSE
+        return res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+    
+            user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role
+            }
+        });
+    
+        } catch (err) {
+    
+        console.log(err);
+    
+        return res.status(500).json({
+            success: false,
+            message: "Server error in register controller"
+        });
+        }
     }
-}
 
     async function loginController(req, res) {
         try {
@@ -87,7 +125,10 @@ async function registerController(req,res){
         }
     
         const token = jwt.sign(
-            { userId: user._id },
+            { 
+                userId: user._id,
+                role:user.role
+            },
             process.env.JWT_SECRET,
             { expiresIn: "3d" }
         );
@@ -103,6 +144,7 @@ async function registerController(req,res){
             _id: user._id,
             name: user.username,
             email: user.email,
+            role:user.role
             },
         });
     
