@@ -1,44 +1,61 @@
 const hotelModel=require("../models/hotel.model")
 const bookingModel=require("../models/book.model")
+const {uploadFile}=require('../services/imageKit.service')
 
 
-
-async function createHotelController(req,res){
+    async function createHotelController(req, res) {
+        try {
+        const { title, description, price, city, room } = req.body;
     
-    try{
-        const {title,description,price,city,room}=req.body;
-
-        if(!title || !description || !price || !city){
-            return res.json({
-                message:"filed is missing check again"
-            })
+        // Validation
+        if (!title || !description || !price || !city) {
+            return res.status(400).json({
+            message: "Fields are missing",
+            });
         }
-
-        const hotel=await hotelModel.create({
+    
+        // File Check
+        if (!req.file) {
+            return res.status(400).json({
+            message: "Image file is required",
+            });
+        }
+    
+        const file = req.file;
+    
+        // console.log(file);
+    
+        // Upload File
+        const result = await uploadFile(
+            file.buffer.toString("base64")
+        );
+    
+        // console.log(result);
+    
+        // Create Hotel
+        const hotel = await hotelModel.create({
             title,
             description,
             price,
             city,
-            createdBy:req.userId,
-            room
-        })
-
-        res.json({
-            message:"hotel created succesfully",
-            title:hotel.title,
-            price:hotel.price,
-            city:hotel.city,
-            description:hotel.description,
-            room:hotel.room,
-            createdBy:hotel.createdBy
-        })
-    }catch(err){
-        res.json({
-            message:err
-        })
-    }
+            room,
+            createdBy: req.userId,
+            img: result.url,
+        });
     
-}
+        return res.status(201).json({
+            message: "Hotel created successfully",
+            hotel,
+        });
+    
+        } catch (err) {
+        console.log(err);
+    
+        return res.status(500).json({
+            message: err.message || "Server Error",
+        });
+        }
+    }
 
 async function bookingHotelController(req, res) {
     try {
@@ -100,4 +117,40 @@ async function getHotelController(req,res){
         hotels:hotel
     })
 }
-module.exports={createHotelController,bookingHotelController,getHotelController}
+
+async function deleteHotelController(req, res) {
+
+  try {
+
+    const { id } = req.params;
+
+    // CHECK HOTEL EXISTS
+    const hotel = await hotelModel.findById(id);
+
+    if (!hotel) {
+      return res.status(404).json({
+        success: false,
+        message: "Hotel not found"
+      });
+    }
+
+    // DELETE HOTEL
+    await hotelModel.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Hotel deleted successfully"
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+}
+
+module.exports={createHotelController,bookingHotelController,getHotelController,deleteHotelController}
