@@ -122,10 +122,10 @@ async function deleteHotelController(req, res) {
 
   try {
 
-    const { id } = req.params;
+    const { hotelId } = req.params;
 
     // CHECK HOTEL EXISTS
-    const hotel = await hotelModel.findById(id);
+    const hotel = await hotelModel.findById(hotelId);
 
     if (!hotel) {
       return res.status(404).json({
@@ -135,7 +135,7 @@ async function deleteHotelController(req, res) {
     }
 
     // DELETE HOTEL
-    await hotelModel.findByIdAndDelete(id);
+    await hotelModel.findByIdAndDelete(hotelId);
 
     return res.status(200).json({
       success: true,
