@@ -20,6 +20,6 @@ router.post('/book/:hotelId',authMiddleware,bookingHotelController)
 router.delete('/book/:hotelId',authMiddleware,authorize("admin"),deleteHotelController)
 
 // owner will se their only created listngs
-router.get('/listing',authMiddleware,listingController)
+router.get('/listing',authMiddleware,authorize('owner'),listingController)
 
 module.exports=router

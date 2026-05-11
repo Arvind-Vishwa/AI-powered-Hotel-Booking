@@ -1,26 +1,39 @@
-require('dotenv').config()
-const jwt=require('jsonwebtoken')
+require("dotenv").config();
 
+const jwt = require("jsonwebtoken");
 
-async function authMiddleware(req,res,next){
-    const token=req.cookies.token
+async function authMiddleware(req, res, next) {
 
-    if(!token){
-        return res.status(401).json({
-            message:"token is missing"
-        })
-    }
+    try {
 
-    try{
-        const decoded=jwt.verify(token,process.env.JWT_SECRET)
-        req.userId=decoded.userId
+        const token = req.cookies?.token;
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Token missing"
+            });
+        }
+
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        req.userId = decoded.userId;
+        req.role = decoded.role;
+
         next();
-    }catch(err){
-        res.status(401).json({
-            message:err
-        })
+
+    } catch (err) {
+
+        console.log("Auth middleware error:", err.message);
+
+        return res.status(401).json({
+            success: false,
+            message: "Invalid or expired token"
+        });
     }
 }
 
-
-module.exports=authMiddleware;
+module.exports = authMiddleware;
