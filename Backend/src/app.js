@@ -6,7 +6,7 @@ const cors=require('cors')
 app.use(cors({
     origin:[
         'http://localhost:5173',
-        'https://dancing-gecko-79e502.netlify.app'
+        'https://boisterous-pika-14800b.netlify.app'
     ],
     credentials:true
 }))
