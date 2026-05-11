@@ -69,8 +69,8 @@ const {tokenBlackListModel}=require("../models/blacklist.model")
         // STORE COOKIE
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false, // true in production
-            sameSite: "lax",
+            secure: true, // true in production
+            sameSite: "none",
             maxAge: 3 * 24 * 60 * 60 * 1000
         });
     
@@ -135,8 +135,8 @@ const {tokenBlackListModel}=require("../models/blacklist.model")
     
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
         });
     
         return res.status(200).json({
