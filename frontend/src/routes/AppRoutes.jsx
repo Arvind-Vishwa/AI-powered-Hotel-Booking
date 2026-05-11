@@ -22,14 +22,14 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* <Route
+      <Route
         path="/"
         element={
           <PrivateRoute>
-            <Dashboard />
+            <User />
           </PrivateRoute>
         }
-      /> */}
+      />
 
       <Route
         path="/create"
@@ -57,7 +57,9 @@ export default function AppRoutes() {
       <Route
         path="/owner"
         element={
-            <Owner />
+            <PrivateRoute>
+              <Owner />
+            </PrivateRoute>
         }
       />
 
@@ -70,7 +72,9 @@ export default function AppRoutes() {
       <Route
         path="/admin"
         element={
-            <Admin />
+            <PrivateRoute>
+              <Admin />
+            </PrivateRoute>
         }
       />
 
