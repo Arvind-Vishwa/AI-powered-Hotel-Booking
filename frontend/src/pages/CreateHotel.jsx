@@ -60,7 +60,7 @@ export default function CreateHotel() {
         img: null,
       });
 
-      navigate("/");
+      navigate("/owner");
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
