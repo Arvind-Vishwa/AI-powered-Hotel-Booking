@@ -170,28 +170,35 @@ async function deleteHotelController(req, res) {
   }
 }
 
-async function listingController(req,res){
+async function listingController(req, res) {
+  try {
+    const token = req.cookies.token;
 
-  const token=req.cookies.token;
-
-  if(!token){
-    return res.status(401).json({
-      message:"Token is missing"
-    })
-  }
-  const userId=req.userId;
-  // console.log(userId)
-
-  const listing=await hotelModel.find({
-    createdBy: req.userId
-  })
-
-  res.status(200).json({
-    message:"listing fetched",
-    data:{
-      data:listing
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Token is missing",
+      });
     }
-  })
+
+    const listing = await hotelModel.find({
+      createdBy: req.userId,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Listings fetched successfully",
+      hotels: listing,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 }
 
 module.exports={createHotelController,bookingHotelController,
