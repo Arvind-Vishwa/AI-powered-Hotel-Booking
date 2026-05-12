@@ -56,13 +56,22 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* LOGOUT */}
-          <button
-            onClick={handleLogout}
-            className="px-5 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:scale-105 transition-all duration-300"
-          >
-            Logout
-          </button>
+          {/* LOGIN / LOGOUT */}
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="px-5 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:scale-105 transition-all duration-300"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="px-5 py-2 rounded-xl bg-white text-black text-sm font-semibold hover:scale-105 transition-all duration-300"
+            >
+              Login
+            </Link>
+          )}
 
         </div>
       </div>
