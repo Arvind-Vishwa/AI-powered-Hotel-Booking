@@ -55,7 +55,7 @@ async function createHotelController(req, res) {
           city,
           room: Number(room),
           createdBy: req.userId,
-          img: result.url || result.secure_url,
+          img: result.url
       });
 
       return res.status(201).json({
