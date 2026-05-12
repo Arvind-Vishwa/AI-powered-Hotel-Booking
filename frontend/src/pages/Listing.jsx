@@ -78,7 +78,7 @@ export default function Listing() {
 
             {/* IMAGE (optional) */}
             <div className="h-40 bg-zinc-800 relative overflow-hidden">
-              {hotel.image ? (
+              {hotel.img ? (
                 <img
                   src={hotel.img}
                   alt={hotel.name}
