@@ -139,7 +139,7 @@ const {tokenBlackListModel}=require("../models/blacklist.model")
             sameSite: "none",
         });
 
-        console.log("cokkies",cookie)
+        
     
         return res.status(200).json({
             user: {
