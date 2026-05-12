@@ -3,60 +3,76 @@ const bookingModel=require("../models/book.model")
 const {uploadFile}=require('../services/imageKit.service')
 
 
-    async function createHotelController(req, res) {
-        try {
-          console.log("hello ji create hotel")
-        const { title, description, price, city, room } = req.body;
-    
-        // Validation
-        if (!title || !description || !price || !city) {
-            return res.status(400).json({
-            message: "Fields are missing",
-            });
-        }
-    
-        // File Check
-        if (!req.file) {
-            return res.status(400).json({
-            message: "Image file is required",
-            });
-        }
-    
-        const file = req.file;
-    
-        // console.log(file);
-    
-        // Upload File
-        const result = await uploadFile(
-            file.buffer.toString("base64")
-        );
-    
-        // console.log(result);
-    
-        // Create Hotel
-        const hotel = await hotelModel.create({
-            title,
-            description,
-            price,
-            city,
-            room,
-            createdBy: req.userId,
-            img: result.url,
-        });
-    
-        return res.status(201).json({
-            message: "Hotel created successfully",
-            hotel,
-        });
-    
-        } catch (err) {
-        console.log(err);
-    
-        return res.status(500).json({
-            message: err.message || "Server Error",
-        });
-        }
-    }
+async function createHotelController(req, res) {
+  try {
+
+      console.log("hello ji create hotel");
+
+      const { title, description, price, city, room } = req.body;
+
+      // Validation
+      if (!title || !description || !price || !city) {
+          return res.status(400).json({
+              message: "Fields are missing",
+          });
+      }
+
+      // File Validation
+      if (!req.file) {
+          return res.status(400).json({
+              message: "Image file is required",
+          });
+      }
+
+      console.log("BODY:", req.body);
+      console.log("FILE:", req.file);
+      console.log("USER:", req.userId);
+
+      // Upload image
+      let result;
+
+      try {
+          result = await uploadFile(
+              req.file.buffer.toString("base64")
+          );
+
+          console.log("UPLOAD RESULT:", result);
+
+      } catch (uploadErr) {
+
+          console.error("Upload Error:", uploadErr);
+
+          return res.status(500).json({
+              message: "Image upload failed",
+          });
+      }
+
+      // Create Hotel
+      const hotel = await hotelModel.create({
+          title,
+          description,
+          price: Number(price),
+          city,
+          room: Number(room),
+          createdBy: req.userId,
+          img: result.url || result.secure_url,
+      });
+
+      return res.status(201).json({
+          message: "Hotel created successfully",
+          hotel,
+      });
+
+  } catch (err) {
+
+      console.error("Create Hotel Error:", err);
+      console.error(err.stack);
+
+      return res.status(500).json({
+          message: err.message || "Server Error",
+      });
+  }
+}
 
 async function bookingHotelController(req, res) {
     try {
