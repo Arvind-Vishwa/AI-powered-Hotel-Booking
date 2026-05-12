@@ -10,7 +10,7 @@ const upload=multer({
     storage:multer.memoryStorage()
 })
 
-router.post('/create',authMiddleware,authorize("owner"),upload.single('img'),createHotelController)
+router.post('/create',authMiddleware,upload.single('img'),createHotelController)
 router.get('/getHotel',getHotelController)
 
 
