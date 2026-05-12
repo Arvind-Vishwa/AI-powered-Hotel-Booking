@@ -13,7 +13,7 @@ export default function Listing() {
         console.log("API RESPONSE:", response);
   
         const hotelsData =
-          response?.data?.data ||
+          response?.data?.hotels ||
           response?.data ||
           [];
   
