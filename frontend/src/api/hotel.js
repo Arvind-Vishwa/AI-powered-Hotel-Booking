@@ -7,6 +7,7 @@ const API=axios.create({
 
 export const createHotel = async(data) => {
     const res=await API.post("/create", data)
+    console.log(res)
     return res;    
 };
 export const getHotels = async() => {
