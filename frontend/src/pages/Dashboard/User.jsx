@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { aiSearch } from "../../api/hotel";
 import HotelList from "../HotelList";
 import Navbar from "../../componenet/Navbar";
 
@@ -30,6 +30,9 @@ export default function User() {
     async () => {
 
       if (!searchText.trim()) {
+        alert(
+        "Please enter search text"
+      );
         return;
       }
 
@@ -37,16 +40,7 @@ export default function User() {
 
         setLoading(true);
 
-        const response =
-          await axios.post(
-
-            "https://ai-powered-hotel-booking.onrender.com/api/hotel/ai-search",
-
-            {
-              prompt: searchText,
-            }
-
-          );
+        const response=await aiSearch(searchText)
 
         console.log(response.data);
 
