@@ -106,32 +106,6 @@ export default function User() {
 
             </h1>
 
-            <p className="text-zinc-500 mt-5 text-lg max-w-2xl leading-8">
-
-              Search hotels naturally using AI.
-
-              Example:
-              <span className="text-zinc-300">
-
-                {" "}
-                "Luxury hotel in Goa with pool near beach"
-
-              </span>
-
-            </p>
-
-            {/* MODEL INFO */}
-            <div className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
-
-              <div className="w-2 h-2 rounded-full bg-emerald-400" />
-
-              <p className="text-sm text-emerald-300">
-
-                Powered by Gemini 1.5 Flash AI
-
-              </p>
-
-            </div>
 
           </div>
 
