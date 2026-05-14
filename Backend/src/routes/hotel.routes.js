@@ -2,6 +2,7 @@ const express=require('express')
 const router=express.Router();
 const {createHotelController,getHotelController}=require('../controllers/hotel.controller')
 const {bookingHotelController,deleteHotelController,listingController}=require("../controllers/hotel.controller")
+const {aiSearchController}=require("../controllers/aiSearch.controller")
 const authMiddleware=require("../middleware/auth.middleware")
 const {uploadFile}=require('../services/imageKit.service')
 const multer=require('multer')
@@ -21,5 +22,12 @@ router.delete('/book/:hotelId',authMiddleware,authorize("admin"),deleteHotelCont
 
 // owner will se their only created listngs
 router.get('/listing',authMiddleware,listingController)
+
+
+// AI seach 
+router.post(
+    "/ai-search",
+    aiSearchController
+  );
 
 module.exports=router
