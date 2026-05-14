@@ -37,40 +37,127 @@ const mongoose=require('mongoose')
     // }, { timestamps: true });
 
 
-
-const hotelSchema=new mongoose.Schema({
-    title:{
-        type:String,
-        unique:true,
-        required:true
-    },
-    description:{
-        type:String,
-        required:true,
-        select:false
-    },
-    city:{
-        type:String,
-        required:true
-    },
-    price:{
-        type:Number,
-        required:true
-    },
-    createdBy:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'user',
+        const hotelSchema = new mongoose.Schema({
+            title: {
+            type: String,
+            unique: true,
+            required: true,
+            },
         
-    },
-    room:{
-        type:Number,
-        required:true
-    },
-    img:{
-        type:String,
-        required:true
-    }
-})
+            description: {
+            type: String,
+            required: true,
+            },
+        
+            city: {
+            type: String,
+            required: true,
+            index: true,
+            },
+        
+            address: {
+            type: String,
+            },
+        
+            price: {
+            type: Number,
+            required: true,
+            index: true,
+            },
+        
+            rating: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 5,
+            },
+        
+            totalReviews: {
+            type: Number,
+            default: 0,
+            },
+        
+            room: {
+            type: Number,
+            required: true,
+            },
+        
+            maxGuests: {
+            type: Number,
+            default: 2,
+            },
+        
+            amenities: [
+            {
+                type: String,
+                lowercase: true,
+            },
+            ],
+        
+            tags: [
+            {
+                type: String,
+                lowercase: true,
+            },
+            ],
+        
+            nearbyPlaces: [
+            {
+                type: String,
+                lowercase: true,
+            },
+            ],
+        
+            hotelType: {
+            type: String,
+            enum: [
+                "budget",
+                "luxury",
+                "business",
+                "resort",
+                "hostel",
+                "villa",
+            ],
+            },
+        
+            checkInTime: {
+            type: String,
+            },
+        
+            checkOutTime: {
+            type: String,
+            },
+        
+            policies: [
+            {
+                type: String,
+                lowercase: true,
+            },
+            ],
+        
+            img: {
+            type: String,
+            required: true,
+            },
+        
+            createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+            },
+        
+            isAvailable: {
+            type: Boolean,
+            default: true,
+            },
+        
+            featured: {
+            type: Boolean,
+            default: false,
+            },
+        
+        }, {
+            timestamps: true,
+        });
 
 const hotelModel=mongoose.model('hotel',hotelSchema);
 
