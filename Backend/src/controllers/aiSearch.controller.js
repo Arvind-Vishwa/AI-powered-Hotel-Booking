@@ -2,7 +2,7 @@
     require("../config/gemini.js");
 
     const hotelModel =
-    require("../models/hotelModel");
+    require("../models/hotel.model.js");
 
     async function aiSearchController(
     req,
