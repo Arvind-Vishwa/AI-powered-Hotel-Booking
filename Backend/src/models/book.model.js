@@ -1,35 +1,93 @@
-const mongoose=require('mongoose')
+const mongoose = require("mongoose");
 
+const bookingSchema = new mongoose.Schema({
 
-const bookingSchema=new mongoose.Schema({
-    userId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"user",
-        required:true
-    },
-    hotelId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"hotel",
-        required:true
-    },
-    checkIn:{
-        type:Date,
-        default:Date.now,
-        required:true
-    },checkOut:{
-        type:Date,
-        required:true
-    },
-    totalPrice:{
-        type:Number,
-        required:true
-    },
-    selectRoom:{
-        type:Number,
-        required:true
-    }
-})
+  // USER WHO BOOKED
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
 
-const bookingModel=mongoose.model('book',bookingSchema)
+  // HOTEL BOOKED
+  hotelId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "hotel",
+    required: true,
+  },
 
-module.exports=bookingModel
+  // CHECK-IN DATE
+  checkIn: {
+    type: Date,
+    required: true,
+  },
+
+  // CHECK-OUT DATE
+  checkOut: {
+    type: Date,
+    required: true,
+  },
+
+  // TOTAL PRICE
+  totalPrice: {
+    type: Number,
+    required: true,
+  },
+
+  // ROOMS BOOKED
+  selectedRooms: {
+    type: Number,
+    required: true,
+    min: 1,
+  },
+
+  // TOTAL GUESTS
+  guests: {
+    type: Number,
+    default: 1,
+  },
+
+  // BOOKING STATUS
+  bookingStatus: {
+    type: String,
+
+    enum: [
+      "pending",
+      "confirmed",
+      "cancelled",
+      "completed",
+    ],
+
+    default: "confirmed",
+  },
+
+  // SPECIAL REQUESTS
+  specialRequests: {
+    type: String,
+    default: "",
+  },
+
+  // PRICE SNAPSHOT
+  pricePerNight: {
+    type: Number,
+  },
+
+  // TOTAL NIGHTS
+  totalNights: {
+    type: Number,
+  },
+
+}, {
+  timestamps: true,
+});
+
+bookingSchema.index({ userId: 1 });
+
+bookingSchema.index({ hotelId: 1 });
+
+const bookingModel = mongoose.model(
+  "book",
+  bookingSchema
+);
+
+module.exports = bookingModel;
