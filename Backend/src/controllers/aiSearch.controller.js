@@ -11,6 +11,7 @@
 
     try {
 
+        // GET PROMPT
         const { prompt } = req.body;
 
         // VALIDATION
@@ -26,16 +27,25 @@
         });
         }
 
-        // GEMINI PROMPT
+        // AI PROMPT
         const aiPrompt = `
 
-    You are a hotel search filter extractor.
+    You are a hotel search filter extractor AI.
 
-    Extract hotel search filters from the user query.
+    IMPORTANT RULES:
 
-    Return ONLY valid JSON.
+    Return ONLY raw valid JSON.
+
+    Do NOT use markdown.
+    Do NOT use \`\`\`json.
+    Do NOT write explanations.
+    Do NOT write extra text.
+    Do NOT write comments.
+
+    Only return JSON object.
 
     Possible fields:
+
     city
     hotelType
     amenities
@@ -46,20 +56,15 @@
 
     Example:
 
-    User:
-    Need luxury hotel in Goa with pool near beach under 5000
-
-    Output:
     {
     "city":"goa",
     "hotelType":"luxury",
-    "amenities":["pool"],
+    "amenities":["pool","wifi"],
     "nearbyPlaces":["beach"],
     "maxPrice":5000
     }
 
-    Now process:
-
+    User Query:
     ${prompt}
 
     `;
@@ -70,19 +75,60 @@
             aiPrompt
         );
 
+        // RAW RESPONSE
         const response =
         result.response.text();
 
-        // CLEAN JSON
+        console.log(
+        "RAW AI RESPONSE:"
+        );
+
+        console.log(response);
+
+        // CLEAN RESPONSE
         const cleanResponse =
         response
             .replace(/```json/g, "")
             .replace(/```/g, "")
             .trim();
 
-        // PARSE JSON
-        const filters =
-        JSON.parse(cleanResponse);
+        console.log(
+        "CLEAN RESPONSE:"
+        );
+
+        console.log(cleanResponse);
+
+        // SAFE JSON PARSE
+        let filters = {};
+
+        try {
+
+        filters =
+            JSON.parse(
+            cleanResponse
+            );
+
+        } catch (parseError) {
+
+        console.log(
+            "JSON PARSE ERROR:"
+        );
+
+        console.log(parseError);
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+            "Invalid AI response format",
+
+        });
+        }
+
+        console.log(
+        "FILTERS:"
+        );
 
         console.log(filters);
 
@@ -92,15 +138,21 @@
         // CITY
         if (filters.city) {
 
-        query.city =
-            filters.city.toLowerCase();
+        query.city = {
+            $regex:
+            filters.city,
+            $options: "i",
+        };
         }
 
         // HOTEL TYPE
         if (filters.hotelType) {
 
-        query.hotelType =
-            filters.hotelType;
+        query.hotelType = {
+            $regex:
+            filters.hotelType,
+            $options: "i",
+        };
         }
 
         // MAX PRICE
@@ -116,17 +168,24 @@
         // AMENITIES
         if (
         filters.amenities &&
+        Array.isArray(
+            filters.amenities
+        ) &&
         filters.amenities.length > 0
         ) {
 
         query.amenities = {
-            $all: filters.amenities,
+            $all:
+            filters.amenities,
         };
         }
 
         // NEARBY PLACES
         if (
         filters.nearbyPlaces &&
+        Array.isArray(
+            filters.nearbyPlaces
+        ) &&
         filters.nearbyPlaces.length > 0
         ) {
 
@@ -135,34 +194,68 @@
             filters.nearbyPlaces,
         };
         }
-        
+
         // TAGS
         if (
         filters.tags &&
+        Array.isArray(
+            filters.tags
+        ) &&
         filters.tags.length > 0
         ) {
 
         query.tags = {
-            $in: filters.tags,
+            $in:
+            filters.tags,
         };
         }
 
+        // RATING
+        if (filters.rating) {
+
+        query.rating = {
+            $gte: Number(
+            filters.rating
+            ),
+        };
+        }
+
+        console.log(
+        "MONGODB QUERY:"
+        );
+
+        console.log(query);
+
         // FIND HOTELS
         const hotels =
-        await hotelModel.find(query);
+        await hotelModel
+            .find(query)
+            .sort({
+            createdAt: -1,
+            });
 
         // RESPONSE
         return res.status(200).json({
 
         success: true,
 
+        message:
+            "Hotels fetched successfully",
+
         filters,
+
+        totalHotels:
+            hotels.length,
 
         hotels,
 
         });
 
     } catch (error) {
+
+        console.error(
+        "AI SEARCH ERROR:"
+        );
 
         console.error(error);
 
@@ -178,5 +271,6 @@
     }
     }
 
-    module.exports =
-    {aiSearchController};
+    module.exports = {
+    aiSearchController,
+    };
