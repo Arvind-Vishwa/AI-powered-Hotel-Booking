@@ -308,6 +308,42 @@ async function bookingHotelController(req, res) {
   }
 }
 
+async function getHotelController(req, res) {
+
+  try {
+
+    const hotels = await hotelModel
+      .find()
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+
+      success: true,
+
+      message: "Hotels fetched successfully",
+
+      totalHotels: hotels.length,
+
+      hotels,
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        error.message ||
+        "Server Error",
+
+    });
+  }
+}
+
 async function deleteHotelController(req, res) {
 
   try {
