@@ -60,8 +60,10 @@ export const useAuthStore = create((set) => ({
     try {
       const res = await getMe();
       set({ user: res.data.user });
+      return res.data.user
     } catch {
       set({ user: null });
+      return null
     }
   },
 

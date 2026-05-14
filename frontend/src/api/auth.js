@@ -21,6 +21,7 @@ export const registerUser=async(data)=>{
 
 export const getMe=async()=>{
     const res=await API.get('/auth/me');
+    console.log(res)
     return res;
 }
 
