@@ -1,9 +1,26 @@
 require("dotenv").config();
 
-const { GoogleGenAI } = require("@google/genai");
+const {
+  GoogleGenerativeAI,
+} = require("@google/generative-ai");
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+if (!process.env.GOOGLE_GENAI_API_KEY) {
+
+  throw new Error(
+    "GOOGLE_GENAI_API_KEY missing in .env"
+  );
+}
+
+const genAI =
+new GoogleGenerativeAI(
+  process.env.GOOGLE_GENAI_API_KEY
+);
+
+const model =
+genAI.getGenerativeModel({
+
+  model: "gemini-1.5-flash",
+
 });
 
-module.exports = ai;
+module.exports = model;

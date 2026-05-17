@@ -1,4 +1,5 @@
-const ai = require("../config/gemini.js");
+const model =
+require("../config/gemini");
 
 const hotelModel =
 require("../models/hotel.model.js");
@@ -100,13 +101,9 @@ User Query:
 
     // GEMINI RESPONSE
     const result =
-    await ai.models.generateContent({
-    
-      model: "gemini-1.5-flash",
-    
-      contents: aiPrompt,
-    
-    });
+    await model.generateContent(
+    aiPrompt
+    );
     
     console.log(
       "FULL GEMINI RESULT:"
@@ -117,7 +114,8 @@ User Query:
     );
 
     // RAW RESPONSE
-    const response = result.text;
+    const response =
+    result.response.text();
 
     console.log(
       "RAW AI RESPONSE:"
