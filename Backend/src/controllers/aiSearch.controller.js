@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const model =
 require("../config/gemini");
 
