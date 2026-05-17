@@ -4,7 +4,7 @@ const {
   GoogleGenerativeAI,
 } = require("@google/generative-ai");
 
-if (!process.env.GOOGLE_GENAI_API_KEY) {
+if (!process.env.Gemini_API_Key) {
 
   throw new Error(
     "GOOGLE_GENAI_API_KEY missing in .env"
@@ -13,7 +13,7 @@ if (!process.env.GOOGLE_GENAI_API_KEY) {
 
 const genAI =
 new GoogleGenerativeAI(
-  process.env.GOOGLE_GENAI_API_KEY
+  process.env.Gemini_API_Key
 );
 
 const model =
