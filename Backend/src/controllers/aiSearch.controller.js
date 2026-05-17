@@ -101,18 +101,20 @@ User Query:
     // GEMINI RESPONSE
     const result =
     await ai.models.generateContent({
-
+    
       model: "gemini-1.5-flash",
-
+    
       contents: aiPrompt,
-
-      generationConfig: {
-
-        temperature: 0.1,
-
-      },
-
+    
     });
+    
+    console.log(
+      "FULL GEMINI RESULT:"
+    );
+    
+    console.log(
+      JSON.stringify(result, null, 2)
+    );
 
     // RAW RESPONSE
     const response = result.text;
