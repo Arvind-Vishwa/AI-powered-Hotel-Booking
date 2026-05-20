@@ -25,8 +25,10 @@ export default function AppRoutes() {
       <Route
         path="/"
         element={
-          
+          <PrivateRoute>
             <User />
+          </PrivateRoute>
+            
           
         }
       />
