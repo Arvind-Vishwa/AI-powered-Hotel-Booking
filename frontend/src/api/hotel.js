@@ -34,20 +34,14 @@ export const bookHotel = async (
     return res;
 }
 
-export const aiSearch =
-  async (prompt) => {
+export const aiSearch = async (prompt) => {
 
-    const response =
-      await API.post(
-        "/ai-search",
-        {
-          prompt,
-        }
-      );
+  const response = await API.post(
+    "/ai-search",
+    {
+      prompt,
+    }
+  );
 
-    console.log(
-      response.data
-    );
-
-    return response;
+  return response;
 };
