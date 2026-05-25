@@ -5,8 +5,8 @@ const ownerDashboard = async (req, res) => {
 
   try {
 
-    const ownerId = req.user.id;
-
+    const ownerId = req.userId;
+    console.log(ownerId)
     // FIND HOTELS CREATED BY OWNER
     const hotels = await hotelModel.find({
       createdBy: ownerId
