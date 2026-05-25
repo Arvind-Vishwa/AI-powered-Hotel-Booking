@@ -11,32 +11,29 @@ export default function HotelList({ hotels }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
 
-      {/* Container */}
-      <div className="max-w-7xl mx-auto px-6 py-10">
+    <div className="min-h-screen bg-[#fafafa] rounded-[40px] p-8">
 
-        {/* Heading */}
-        <div className="mb-10">
+      {/* GRID */}
+      <div className="
+        grid
+        grid-cols-1
+        sm:grid-cols-2
+        md:grid-cols-3
+        lg:grid-cols-4
+        gap-x-8
+        gap-y-12
+        place-items-center
+      ">
 
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-            AI Search Results
-          </h1>
+        {hotels.map((h) => (
 
-          <p className="mt-2 text-gray-500 text-sm">
-            Found {hotels.length} matching hotels
-          </p>
+          <HotelCard
+            key={h._id}
+            hotel={h}
+          />
 
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12 place-items-center">
-
-          {hotels.map((h) => (
-            <HotelCard key={h._id} hotel={h} />
-          ))}
-
-        </div>
+        ))}
 
       </div>
 

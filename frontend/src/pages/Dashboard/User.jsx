@@ -23,6 +23,9 @@ export default function User() {
   // LOADING
   const [loading, setLoading] = useState(false);
 
+  // TRACK SEARCH STATUS
+  const [searched, setSearched] = useState(false);
+
   // FETCH ALL HOTELS
   useEffect(() => {
 
@@ -58,7 +61,9 @@ export default function User() {
 
       console.log(response.data);
 
-      setAiHotels(response.data.hotels);
+      setAiHotels(response.data.hotels || []);
+
+      setSearched(true);
 
     } catch (error) {
 
@@ -78,6 +83,8 @@ export default function User() {
     setAiHotels([]);
 
     setSearchText("");
+
+    setSearched(false);
   };
 
   return (
@@ -198,15 +205,16 @@ export default function User() {
 
               </button>
 
-              {/* CLEAR BUTTON */}
-              {aiHotels.length > 0 && (
+              {/* CLEAR SEARCH */}
+              {searched && (
 
                 <button
                   onClick={clearSearch}
                   className="
                     mt-3
                     w-full
-                    border border-white/10
+                    border
+                    border-white/10
                     rounded-2xl
                     py-3
                     text-zinc-300
@@ -269,7 +277,7 @@ export default function User() {
 
             <h2 className="text-2xl font-bold">
 
-              {aiHotels.length > 0
+              {searched
                 ? "AI Search Results"
                 : "Popular Hotels"}
 
@@ -277,17 +285,18 @@ export default function User() {
 
             <p className="text-zinc-500 mt-1">
 
-              Showing {
-                aiHotels.length > 0
-                  ? aiHotels.length
-                  : allHotels.length
-              } hotels
+              {searched
+                ? aiHotels.length > 0
+                  ? `Found ${aiHotels.length} matching hotels`
+                  : "No matching hotels found"
+                : `Showing ${allHotels.length} hotels`}
 
             </p>
 
           </div>
 
-          {aiHotels.length > 0 && (
+          {/* SHOW ONLY AFTER AI SEARCH */}
+          {searched && (
 
             <div className="flex items-center gap-2 text-sm text-zinc-400">
 
@@ -301,14 +310,38 @@ export default function User() {
 
         </div>
 
-        {/* HOTEL LIST */}
-        <HotelList
-          hotels={
-            aiHotels.length > 0
-              ? aiHotels
-              : allHotels
-          }
-        />
+        {/* NO HOTELS FOUND */}
+        {searched && aiHotels.length === 0 ? (
+
+          <div className="
+            bg-white/5
+            border border-white/10
+            rounded-3xl
+            py-20
+            text-center
+          ">
+
+            <h2 className="text-3xl font-bold text-white">
+              No Hotels Found
+            </h2>
+
+            <p className="text-zinc-400 mt-3">
+              Try searching with different keywords
+            </p>
+
+          </div>
+
+        ) : (
+
+          <HotelList
+            hotels={
+              searched
+                ? aiHotels
+                : allHotels
+            }
+          />
+
+        )}
 
       </main>
 
