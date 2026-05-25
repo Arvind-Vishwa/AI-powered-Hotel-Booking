@@ -14,6 +14,7 @@ app.use(cors({
 // routes
 const AuthRouter=require("../src/routes/user.route")
 const hotelRouter=require("../src/routes/hotel.routes")
+const ownerRouter=require("./routes/owner.route")
 
 
 app.use(express.json())
@@ -23,6 +24,8 @@ app.use(cookieParser());
 app.use('/api/auth',AuthRouter);
 
 app.use('/api/hotel',hotelRouter);
+
+app.use('/api',ownerRouter)
 
 
 
