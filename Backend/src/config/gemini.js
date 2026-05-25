@@ -1,7 +1,7 @@
-const path = require("path");
+const path=require('path');
 
 require("dotenv").config({
-  path: path.resolve(__dirname, ".env"),
+  path: path.resolve(__dirname, "../.env"),
 });
 
 const express = require("express");
@@ -19,7 +19,10 @@ new GoogleGenerativeAI(
 const model =
 genAI.getGenerativeModel({
 
-  model: "gemini-1.5-flash",
+  model: "gemini-1.5-flash-latest",
+  generationConfig: {
+    responseMimeType: "application/json",
+  },
 
 });
 
