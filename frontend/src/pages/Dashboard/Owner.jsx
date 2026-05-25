@@ -1,55 +1,73 @@
 import Navbar from "../../componenet/Navbar";
+import {fetchOwnerDashboard} from '../../api/owner'
 import { useNavigate } from "react-router-dom";
+
+import { useEffect, useState } from "react";
+
+import axios from "axios";
+
 export default function Owner() {
-  const navigate=useNavigate();
 
-  const stats = [
-    { title: "Hotels", value: 4 },
-    { title: "Rooms", value: 48 },
-    { title: "Bookings", value: 12 },
-  ];
+  const navigate = useNavigate();
 
-  const hotels = [
-    {
-      name: "Royal Palace",
-      city: "Delhi",
-      rooms: 12,
-    },
-    {
-      name: "Ocean View",
-      city: "Mumbai",
-      rooms: 20,
-    },
-  ];
+  const [stats, setStats] = useState({});
 
-  const bookings = [
-    {
-      guest: "Rahul Sharma",
-      hotel: "Royal Palace",
-      room: 204,
-      status: "Confirmed",
-    },
-    {
-      guest: "Ananya Verma",
-      hotel: "Ocean View",
-      room: 105,
-      status: "Pending",
-    },
-  ];
+  const [hotels, setHotels] = useState([]);
+
+  const [bookings, setBookings] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    fetchDashboard();
+
+  }, []);
+
+  const fetchDashboard = async () => {
+
+    try {
+      const res=await fetchOwnerDashboard();
+
+      setStats(res.data.stats);
+
+      setHotels(res.data.hotels);
+
+      setBookings(res.data.bookings);
+
+      setLoading(false);
+
+    } catch (err) {
+
+      console.log(err);
+
+      setLoading(false);
+
+    }
+
+  };
+
+  if (loading) {
+    return (
+      <div className="text-white p-10">
+        Loading...
+      </div>
+    );
+  }
 
   return (
+
     <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-black to-zinc-900 text-white">
 
-      {/* Navbar */}
       <Navbar />
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-10">
 
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
 
           <div>
+
             <h1 className="text-5xl font-bold tracking-tight">
               Owner Dashboard
             </h1>
@@ -57,62 +75,91 @@ export default function Owner() {
             <p className="text-zinc-500 mt-3 text-lg">
               Manage hotels, rooms, and bookings effortlessly.
             </p>
+
           </div>
 
-          <button className="
-            bg-white
-            text-black
-            px-6 py-3
-            rounded-2xl
-            font-semibold
-            hover:scale-105
-            transition-all
-            duration-300
-          ">
-            + Add Hotel
-          </button>
-          <button
-          className="
-          bg-white
-          text-black
-          px-6 py-3
-          rounded-2xl
-          font-semibold
-          hover:scale-105
-          transition-all
-          duration-300"
-          onClick={()=>{navigate('/listing')}}
-          >
-            See Your Hotel Listing
-          </button>
+          <div className="flex gap-4">
+
+            <button
+              onClick={() => navigate("/create")}
+              className="
+                bg-white
+                text-black
+                px-6 py-3
+                rounded-2xl
+                font-semibold
+              "
+            >
+              + Add Hotel
+            </button>
+
+            <button
+              onClick={() => navigate("/listing")}
+              className="
+                bg-white
+                text-black
+                px-6 py-3
+                rounded-2xl
+                font-semibold
+              "
+            >
+              See Listings
+            </button>
+
+          </div>
 
         </div>
 
         {/* STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
 
-          {stats.map((stat) => (
-            <div
-              key={stat.title}
-              className="
-                bg-white/5
-                border border-white/10
-                rounded-3xl
-                p-7
-                backdrop-blur-xl
-                hover:border-white/20
-                transition-all
-              "
-            >
-              <p className="text-zinc-400 text-sm">
-                {stat.title}
-              </p>
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-7">
 
-              <h2 className="text-5xl font-bold mt-4">
-                {stat.value}
-              </h2>
-            </div>
-          ))}
+            <p className="text-zinc-400 text-sm">
+              Hotels
+            </p>
+
+            <h2 className="text-5xl font-bold mt-4">
+              {stats.totalHotels}
+            </h2>
+
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-7">
+
+            <p className="text-zinc-400 text-sm">
+              Rooms
+            </p>
+
+            <h2 className="text-5xl font-bold mt-4">
+              {stats.totalRooms}
+            </h2>
+
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-7">
+
+            <p className="text-zinc-400 text-sm">
+              Bookings
+            </p>
+
+            <h2 className="text-5xl font-bold mt-4">
+              {stats.totalBookings}
+            </h2>
+
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-7">
+
+            <p className="text-zinc-400 text-sm">
+              Revenue
+            </p>
+
+            <h2 className="text-5xl font-bold mt-4">
+              ₹{stats.totalRevenue}
+            </h2>
+
+          </div>
 
         </div>
 
@@ -123,10 +170,10 @@ export default function Owner() {
           rounded-3xl
           p-8
           mb-8
-          backdrop-blur-xl
         ">
 
           <div className="flex items-center justify-between mb-8">
+
             <h2 className="text-2xl font-semibold">
               Your Hotels
             </h2>
@@ -134,48 +181,54 @@ export default function Owner() {
             <p className="text-sm text-zinc-500">
               {hotels.length} Properties
             </p>
+
           </div>
 
           <div className="space-y-4">
 
-            {hotels.map((hotel, index) => (
+            {hotels.map((hotel) => (
+
               <div
-                key={index}
+                key={hotel._id}
                 className="
                   flex items-center justify-between
                   bg-white/[0.03]
                   border border-white/5
                   rounded-2xl
                   px-6 py-5
-                  hover:bg-white/[0.05]
-                  transition-all
                 "
               >
 
                 <div>
+
                   <h3 className="font-semibold text-lg">
-                    {hotel.name}
+                    {hotel.title}
                   </h3>
 
                   <p className="text-zinc-500 text-sm mt-1">
                     {hotel.city}
                   </p>
+
                 </div>
 
                 <div className="text-right">
+
                   <p className="text-sm text-zinc-500">
                     Rooms
                   </p>
 
                   <h4 className="text-xl font-bold">
-                    {hotel.rooms}
+                    {hotel.room}
                   </h4>
+
                 </div>
 
               </div>
+
             ))}
 
           </div>
+
         </section>
 
         {/* BOOKINGS */}
@@ -184,24 +237,22 @@ export default function Owner() {
           border border-white/10
           rounded-3xl
           p-8
-          backdrop-blur-xl
         ">
 
           <div className="flex items-center justify-between mb-8">
+
             <h2 className="text-2xl font-semibold">
               Recent Bookings
             </h2>
 
-            <p className="text-sm text-zinc-500">
-              Latest activity
-            </p>
           </div>
 
           <div className="space-y-4">
 
-            {bookings.map((booking, index) => (
+            {bookings.map((booking) => (
+
               <div
-                key={index}
+                key={booking._id}
                 className="
                   flex flex-col md:flex-row
                   md:items-center
@@ -215,41 +266,50 @@ export default function Owner() {
               >
 
                 <div>
+
                   <h3 className="font-semibold">
-                    {booking.guest}
+                    {booking.userId?.username}
                   </h3>
 
                   <p className="text-zinc-500 text-sm mt-1">
-                    {booking.hotel}
+                    {booking.hotelId?.title}
                   </p>
+
                 </div>
 
                 <div className="text-zinc-400 text-sm">
-                  Room #{booking.room}
+
+                  ₹{booking.totalPrice}
+
                 </div>
 
                 <div>
+
                   <span
                     className={`
                       px-4 py-2 rounded-full text-sm font-medium
                       ${
-                        booking.status === "Confirmed"
+                        booking.bookingStatus === "confirmed"
                           ? "bg-green-500/15 text-green-400"
                           : "bg-yellow-500/15 text-yellow-400"
                       }
                     `}
                   >
-                    {booking.status}
+                    {booking.bookingStatus}
                   </span>
+
                 </div>
 
               </div>
+
             ))}
 
           </div>
+
         </section>
 
       </main>
+
     </div>
   );
 }

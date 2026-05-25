@@ -29,12 +29,12 @@ export default function Navbar() {
         {/* NAV LINKS */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
 
-          <Link
+          {/* <Link
             to="/hotels"
             className="hover:text-white transition"
           >
             Hotels
-          </Link>
+          </Link> */}
 
           {user?.role === "owner" && (
             <Link
