@@ -19,7 +19,7 @@ new GoogleGenerativeAI(
 const model =
 genAI.getGenerativeModel({
 
-  model: "Gemini 3.1 Flash-Lite",
+  model: "gemini-2.5-flash-lite",
   generationConfig: {
     responseMimeType: "application/json",
   },
