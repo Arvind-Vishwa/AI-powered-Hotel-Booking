@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { aiSearch } from "../../api/hotel";
+import { useEffect, useState } from "react";
+import { aiSearch, getHotels } from "../../api/hotel";
 import HotelList from "../HotelList";
 import Navbar from "../../componenet/Navbar";
 
@@ -9,58 +9,76 @@ import {
   Loader2,
 } from "lucide-react";
 
-import axios from "axios";
-
 export default function User() {
 
-  // AI SEARCH INPUT
-  const [searchText, setSearchText] =
-    useState("");
+  // SEARCH INPUT
+  const [searchText, setSearchText] = useState("");
 
-  // AI RESULT HOTELS
-  const [hotels, setHotels] =
-    useState([]);
+  // ALL HOTELS
+  const [allHotels, setAllHotels] = useState([]);
+
+  // AI SEARCH HOTELS
+  const [aiHotels, setAiHotels] = useState([]);
 
   // LOADING
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // FETCH ALL HOTELS
+  useEffect(() => {
+
+    getHotels()
+      .then((res) => {
+
+        setAllHotels(res.data.hotels);
+
+      })
+      .catch((err) => {
+
+        console.error(err);
+
+      });
+
+  }, []);
 
   // AI SEARCH FUNCTION
-  const handleAISearch =
-    async () => {
+  const handleAISearch = async () => {
 
-      if (!searchText.trim()) {
-        alert(
-        "Please enter search text"
-      );
-        return;
-      }
+    if (!searchText.trim()) {
 
-      try {
+      alert("Please enter search text");
 
-        setLoading(true);
+      return;
+    }
 
-        const response=await aiSearch(searchText)
+    try {
 
-        console.log(response.data);
+      setLoading(true);
 
-        setHotels(
-          response.data.hotels
-        );
+      const response = await aiSearch(searchText);
 
-      } catch (error) {
+      console.log(response.data);
 
-        console.error(error);
+      setAiHotels(response.data.hotels);
 
-        alert(
-          "AI Search Failed"
-        );
+    } catch (error) {
 
-      } finally {
+      console.error(error);
 
-        setLoading(false);
-      }
-    };
+      alert("AI Search Failed");
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
+  // CLEAR SEARCH
+  const clearSearch = () => {
+
+    setAiHotels([]);
+
+    setSearchText("");
+  };
 
   return (
 
@@ -85,9 +103,7 @@ export default function User() {
                 <Sparkles className="w-4 h-4 text-yellow-400" />
 
                 <span className="text-sm text-zinc-300">
-
                   AI Powered Search
-
                 </span>
 
               </div>
@@ -99,13 +115,16 @@ export default function User() {
               Find Your
 
               <span className="block text-zinc-400">
-
                 Perfect Stay
-
               </span>
 
             </h1>
 
+            <p className="mt-5 text-zinc-500 max-w-xl">
+              Discover luxury hotels, budget stays,
+              beach resorts, and premium experiences
+              powered by AI search.
+            </p>
 
           </div>
 
@@ -123,9 +142,7 @@ export default function User() {
                   type="text"
                   value={searchText}
                   onChange={(e) =>
-                    setSearchText(
-                      e.target.value
-                    )
+                    setSearchText(e.target.value)
                   }
                   placeholder='Try: "Budget hotel in Mumbai with wifi"'
                   className="
@@ -140,11 +157,9 @@ export default function User() {
 
               </div>
 
-              {/* BUTTON */}
+              {/* SEARCH BUTTON */}
               <button
-                onClick={
-                  handleAISearch
-                }
+                onClick={handleAISearch}
                 disabled={loading}
                 className="
                   mt-3
@@ -182,6 +197,29 @@ export default function User() {
                 )}
 
               </button>
+
+              {/* CLEAR BUTTON */}
+              {aiHotels.length > 0 && (
+
+                <button
+                  onClick={clearSearch}
+                  className="
+                    mt-3
+                    w-full
+                    border border-white/10
+                    rounded-2xl
+                    py-3
+                    text-zinc-300
+                    hover:bg-white/5
+                    transition
+                  "
+                >
+
+                  Clear Search
+
+                </button>
+
+              )}
 
             </div>
 
@@ -224,46 +262,53 @@ export default function User() {
 
         </div>
 
-        {/* RESULTS */}
-        <div>
+        {/* RESULTS HEADER */}
+        <div className="mb-8 flex items-center justify-between">
 
-          {/* AI RESULT TITLE */}
-          {hotels.length > 0 && (
+          <div>
 
-            <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">
 
-              <div>
+              {aiHotels.length > 0
+                ? "AI Search Results"
+                : "Popular Hotels"}
 
-                <h2 className="text-2xl font-bold">
+            </h2>
 
-                  AI Search Results
+            <p className="text-zinc-500 mt-1">
 
-                </h2>
+              Showing {
+                aiHotels.length > 0
+                  ? aiHotels.length
+                  : allHotels.length
+              } hotels
 
-                <p className="text-zinc-500 mt-1">
+            </p>
 
-                  Found {hotels.length} matching hotels
+          </div>
 
-                </p>
+          {aiHotels.length > 0 && (
 
-              </div>
+            <div className="flex items-center gap-2 text-sm text-zinc-400">
 
-              <div className="flex items-center gap-2 text-sm text-zinc-400">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
 
-                <Sparkles className="w-4 h-4" />
-
-                Gemini AI Matching
-
-              </div>
+              Gemini AI Matching
 
             </div>
 
           )}
 
-          {/* HOTEL LIST */}
-          <HotelList hotels={hotels} />
-
         </div>
+
+        {/* HOTEL LIST */}
+        <HotelList
+          hotels={
+            aiHotels.length > 0
+              ? aiHotels
+              : allHotels
+          }
+        />
 
       </main>
 
